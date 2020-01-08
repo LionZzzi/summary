@@ -8,6 +8,7 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import javax.annotation.Resource;
+import java.util.Random;
 
 /**
  * 五种基本数据结构 详见 http://redisdoc.com/string/index.html
@@ -30,6 +31,29 @@ public class BitMapData {
             jedis.flushDB();
             // 清除所有数据库的数据
             // jedis.flushAll();
+        } catch (Exception e) {
+            log.warn("发生异常 {}", e.getMessage());
+        }
+    }
+
+    @GetMapping("/random/signIn")
+    public void signIn() {
+        Random random = new Random();
+        try (Jedis jedis = jedisPool.getResource()) {
+            // 模拟50W人 2020-01-08随机签到
+            for (int i = 1; i <= 500000; i++) {
+                jedis.setbit("2020-01-08", i, random.nextBoolean());
+            }
+        } catch (Exception e) {
+            log.warn("发生异常 {}", e.getMessage());
+        }
+    }
+
+    @GetMapping("/statistics")
+    public void statistics() {
+        try (Jedis jedis = jedisPool.getResource()) {
+            // 2020-01-08 签到人数
+            log.info("2020-01-08 签到人数:{}", jedis.bitcount("2020-01-08"));
         } catch (Exception e) {
             log.warn("发生异常 {}", e.getMessage());
         }
