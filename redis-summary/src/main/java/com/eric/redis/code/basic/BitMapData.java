@@ -1,4 +1,4 @@
-package com.eric.redis.basic;
+package com.eric.redis.code.basic;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -8,18 +8,18 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import javax.annotation.Resource;
+import java.util.Random;
 
 /**
  * 五种基本数据结构 详见 http://redisdoc.com/string/index.html
  *
  * @author Eric
- * @date 2020/1/9 22:03
+ * @date 2020/1/8 21:03
  */
 @Slf4j
 @RestController
-@RequestMapping("/hyperloglog")
-public class HyperLogLogData {
-
+@RequestMapping("/bitmap")
+public class BitMapData {
     @Resource
     private JedisPool jedisPool;
 
@@ -38,9 +38,11 @@ public class HyperLogLogData {
 
     @GetMapping("/mock")
     public void mock() {
+        Random random = new Random();
         try (Jedis jedis = jedisPool.getResource()) {
-            for (int i = 1; i <= 300000; i++) {
-                jedis.pfadd("web:view", String.valueOf(i));
+            // 模拟用户ID:1 2020年1月份的签到情况
+            for (int i = 1; i <= 31; i++) {
+                jedis.setbit("1:202001", i, random.nextBoolean());
             }
         } catch (Exception e) {
             log.warn("发生异常 {}", e.getMessage());
@@ -50,8 +52,12 @@ public class HyperLogLogData {
     @GetMapping("/info")
     public void info() {
         try (Jedis jedis = jedisPool.getResource()) {
-            System.out.println((float) 301169/300000);
-            log.info("统计web的浏览量:{}", jedis.pfcount("web:view"));
+            log.info("===2020年1月份签到情况===");
+            log.info("签到天数:{}天", jedis.bitcount("1:202001"));
+            log.info("首次签到日期:202001 - {}", jedis.bitpos("1:202001", true));
+            for (int i = 1; i <= 31; i++) {
+                log.info("202001 - {}, {}", i, jedis.getbit("1:202001", i) ? "√" : "x");
+            }
         } catch (Exception e) {
             log.warn("发生异常 {}", e.getMessage());
         }

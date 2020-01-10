@@ -1,4 +1,4 @@
-package com.eric.redis.pipeline;
+package com.eric.redis.code.pipeline;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.web.bind.annotation.GetMapping;
