@@ -6,6 +6,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
+import redis.clients.jedis.Pipeline;
 
 import javax.annotation.Resource;
 import java.util.ArrayList;
@@ -49,7 +50,7 @@ public class BitMapData {
         try (Jedis jedis = jedisPool.getResource()) {
             // 模拟用户 2020年1月1号的签到情况
             for (Integer integer : list) {
-                jedis.setbit("20200101",integer,random.nextBoolean());
+                jedis.setbit("20200101", integer, random.nextBoolean());
             }
         } catch (Exception e) {
             log.warn("发生异常 {}", e.getMessage());
@@ -61,9 +62,13 @@ public class BitMapData {
         try (Jedis jedis = jedisPool.getResource()) {
             log.info("===2020年1月1号签到情况===");
             log.info("签到天数:{}天", jedis.bitcount("20200101"));
-            log.info("首次签到日期:20200101 - {}", jedis.bitpos("20200101", true));
+            Pipeline pipelined = jedis.pipelined();
             for (Integer integer : list) {
-                log.info("20200101用户{}签到情况:{}", integer, jedis.getbit("20200101", integer) ? "√" : "x");
+                pipelined.getbit("20200101", integer);
+            }
+            List<Object> objects = pipelined.syncAndReturnAll();
+            for (Integer integer : list) {
+                log.info("20200101用户{}签到情况:{}", integer, (Boolean) objects.get(integer) ? "√" : "x");
             }
         } catch (Exception e) {
             log.warn("发生异常 {}", e.getMessage());
