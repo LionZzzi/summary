@@ -8,6 +8,8 @@ import redis.clients.jedis.Jedis;
 import redis.clients.jedis.JedisPool;
 
 import javax.annotation.Resource;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Random;
 
 /**
@@ -22,6 +24,9 @@ import java.util.Random;
 public class BitMapData {
     @Resource
     private JedisPool jedisPool;
+
+    public static List<Integer> list = new ArrayList<>();
+    public static Random random = new Random();
 
     @GetMapping("/flush")
     public void flush() {
@@ -38,11 +43,13 @@ public class BitMapData {
 
     @GetMapping("/mock")
     public void mock() {
-        Random random = new Random();
+        for (int i = 0; i < 20; i++) {
+            list.add(i);
+        }
         try (Jedis jedis = jedisPool.getResource()) {
-            // 模拟用户ID:1 2020年1月份的签到情况
-            for (int i = 1; i <= 31; i++) {
-                jedis.setbit("1:202001", i, random.nextBoolean());
+            // 模拟用户 2020年1月1号的签到情况
+            for (Integer integer : list) {
+                jedis.setbit("20200101",integer,random.nextBoolean());
             }
         } catch (Exception e) {
             log.warn("发生异常 {}", e.getMessage());
@@ -52,11 +59,11 @@ public class BitMapData {
     @GetMapping("/info")
     public void info() {
         try (Jedis jedis = jedisPool.getResource()) {
-            log.info("===2020年1月份签到情况===");
-            log.info("签到天数:{}天", jedis.bitcount("1:202001"));
-            log.info("首次签到日期:202001 - {}", jedis.bitpos("1:202001", true));
-            for (int i = 1; i <= 31; i++) {
-                log.info("202001 - {}, {}", i, jedis.getbit("1:202001", i) ? "√" : "x");
+            log.info("===2020年1月1号签到情况===");
+            log.info("签到天数:{}天", jedis.bitcount("20200101"));
+            log.info("首次签到日期:20200101 - {}", jedis.bitpos("20200101", true));
+            for (Integer integer : list) {
+                log.info("20200101用户{}签到情况:{}", integer, jedis.getbit("20200101", integer) ? "√" : "x");
             }
         } catch (Exception e) {
             log.warn("发生异常 {}", e.getMessage());
