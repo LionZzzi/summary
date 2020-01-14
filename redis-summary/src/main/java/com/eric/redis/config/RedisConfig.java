@@ -1,6 +1,7 @@
 package com.eric.redis.config;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,6 +20,13 @@ import java.util.Set;
 @Configuration
 @Slf4j
 public class RedisConfig extends CachingConfigurerSupport {
+
+    @Value("${spring.redis.host}")
+    private String host;
+
+    @Value("${spring.redis.port}")
+    private int port;
+
     @Bean
     public JedisPool redisPoolFactory() {
         log.info("JedisPool注入成功！！");
@@ -27,6 +35,6 @@ public class RedisConfig extends CachingConfigurerSupport {
         jedisPoolConfig.setBlockWhenExhausted(true);
         // 是否启用pool的jmx管理功能, 默认true
         jedisPoolConfig.setJmxEnabled(true);
-        return new JedisPool(jedisPoolConfig, "192.168.137.129", 6379);
+        return new JedisPool(jedisPoolConfig, host, port);
     }
 }
