@@ -2,16 +2,18 @@ package com.eric.redis.config;
 
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.cache.CacheManager;
 import org.springframework.cache.annotation.CachingConfigurerSupport;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import redis.clients.jedis.HostAndPort;
-import redis.clients.jedis.JedisCluster;
+import org.springframework.data.redis.cache.RedisCacheManager;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.connection.lettuce.LettuceConnectionFactory;
+import org.springframework.data.redis.core.RedisTemplate;
+import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer;
+import org.springframework.data.redis.serializer.StringRedisSerializer;
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
-
-import java.util.HashSet;
-import java.util.Set;
 
 /**
  * @author Eric
@@ -21,20 +23,48 @@ import java.util.Set;
 @Slf4j
 public class RedisConfig extends CachingConfigurerSupport {
 
-    @Value("${spring.redis.host}")
-    private String host;
-
-    @Value("${spring.redis.port}")
-    private int port;
+//    @Value("${spring.redis.host}")
+//    private String host;
+//
+//    @Value("${spring.redis.port}")
+//    private int port;
+//
+//    /**
+//     * 等待时间
+//     */
+//    @Value("${spring.redis.jedis.pool.max-wait}")
+//    private long maxWait;
+//
+//    /**
+//     * 最大空闲连接
+//     */
+//    @Value("${spring.redis.jedis.pool.max-idle}")
+//    private int maxIdle;
+//
+//    @Bean
+//    public JedisPool redisPoolFactory() {
+//        log.info("JedisPool注入成功！！");
+//        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
+//        jedisPoolConfig.setMaxWaitMillis(maxWait);
+//        jedisPoolConfig.setMaxIdle(maxIdle);
+//        return new JedisPool(jedisPoolConfig, host, port);
+//    }
 
     @Bean
-    public JedisPool redisPoolFactory() {
-        log.info("JedisPool注入成功！！");
-        JedisPoolConfig jedisPoolConfig = new JedisPoolConfig();
-        // 连接耗尽时是否阻塞, false报异常,ture阻塞直到超时, 默认true
-        jedisPoolConfig.setBlockWhenExhausted(true);
-        // 是否启用pool的jmx管理功能, 默认true
-        jedisPoolConfig.setJmxEnabled(true);
-        return new JedisPool(jedisPoolConfig, host, port);
+    public CacheManager cacheManager(RedisConnectionFactory redisConnectionFactory) {
+        return RedisCacheManager.create(redisConnectionFactory);
+    }
+
+    @Bean
+    public RedisTemplate<Object, Object> redisTemplate(LettuceConnectionFactory connectionFactory) {
+        RedisTemplate<Object, Object> template = new RedisTemplate<>();
+        template.setConnectionFactory(connectionFactory);
+        // 使用Jackson2JsonRedisSerializer来序列化和反序列化redis的value值（默认使用JDK的序列化方式）
+        GenericJackson2JsonRedisSerializer jackson2JsonRedisSerializer = new GenericJackson2JsonRedisSerializer();
+        template.setValueSerializer(jackson2JsonRedisSerializer);
+        template.setKeySerializer(new StringRedisSerializer());
+        template.setHashKeySerializer(new StringRedisSerializer());
+        template.afterPropertiesSet();
+        return template;
     }
 }

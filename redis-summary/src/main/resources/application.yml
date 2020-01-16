@@ -4,10 +4,12 @@ spring:
     host: 192.168.137.130
     port: 6379
     timeout: 10000
-    jedis:
+    lettuce:
       pool:
         max-active: -1
         max-wait:  -1s
         max-idle: 500
         min-idle: 50
+  profiles:
+    active: sentinel
 
