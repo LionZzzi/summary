@@ -7,7 +7,7 @@ package com.eric.thread.code.thread;
 public class DaemonThread {
 
     private static class UseDaemon extends Thread {
-        public UseDaemon(String name) {
+        public UseDaemon(String name) { 
             super(name);
         }
 
