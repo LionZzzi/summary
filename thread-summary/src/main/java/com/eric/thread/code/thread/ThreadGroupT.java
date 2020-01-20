@@ -6,10 +6,26 @@ package com.eric.thread.code.thread;
  */
 public class ThreadGroupT {
     public static void main(String[] args) {
-        Thread t = new Thread(() -> System.out.println("hello"));
-        t.start();
-        System.out.println(t.getName());
-        System.out.println(t.getId());
-        System.out.println(t.getPriority());
+        Thread t1 = new Thread(() -> {
+            for (int i = 0; i < 1000; i++) {
+                System.out.println(Thread.currentThread().getName() + ":" + i);
+            }
+        });
+        t1.setPriority(Thread.MAX_PRIORITY);
+        Thread t2 = new Thread(() -> {
+            for (int i = 0; i < 1000; i++) {
+                System.out.println(Thread.currentThread().getName() + ":" + i);
+            }
+        });
+        t2.setPriority(Thread.NORM_PRIORITY);
+        Thread t3 = new Thread(() -> {
+            for (int i = 0; i < 1000; i++) {
+                System.out.println(Thread.currentThread().getName() + ":" + i);
+            }
+        });
+        t3.setPriority(Thread.MIN_PRIORITY);
+        t1.start();
+        t2.start();
+        t3.start();
     }
 }
