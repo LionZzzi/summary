@@ -29,18 +29,19 @@ public class ProduceConsumerDemo {
 
     public void consumer() {
         synchronized (LOCK) {
-            while (i > 0) {
-                --i;
-                System.out.println(Thread.currentThread().getName() + "减" + i);
-                LOCK.notifyAll();
+            while (i <= 0) {
+                try {
+                    System.out.println(Thread.currentThread().getName() + "的值为:" + i + ",wait了");
+                    LOCK.wait();
+                    System.out.println(Thread.currentThread().getName() + "被唤醒了");
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
             }
-            try {
-                System.out.println(Thread.currentThread().getName() + "的值为:" + i + ",wait了");
-                LOCK.wait();
-                System.out.println(Thread.currentThread().getName() + "被唤醒了");
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            --i;
+            System.out.println(Thread.currentThread().getName() + "减" + i);
+            LOCK.notifyAll();
+
         }
     }
 
