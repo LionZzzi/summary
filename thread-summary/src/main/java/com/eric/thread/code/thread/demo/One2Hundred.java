@@ -6,6 +6,7 @@ package com.eric.thread.code.thread.demo;
  */
 public class One2Hundred {
     private final static Object LOCK = new Object();
+
     public static void main(String[] args) {
         ThreadAA a = new ThreadAA(LOCK);
         ThreadBB b = new ThreadBB(LOCK);
@@ -15,7 +16,8 @@ public class One2Hundred {
 }
 
 class ThreadAA extends Thread {
-    private Object lock;
+    private final Object lock;
+
     public ThreadAA(Object lock) {
         this.lock = lock;
     }
@@ -24,24 +26,25 @@ class ThreadAA extends Thread {
     public void run() {
         synchronized (lock) {
             for (int i = 1; i <= 100; i += 2) {
-                lock.notify();
                 System.out.println(i);
+                lock.notify();
                 try {
                     lock.wait();
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
-                lock.notify();
             }
         }
     }
 }
 
 class ThreadBB extends Thread {
-    private Object lock;
+    private final Object lock;
+
     public ThreadBB(Object lock) {
         this.lock = lock;
     }
+
     @Override
     public void run() {
         synchronized (lock) {
