@@ -41,7 +41,6 @@ public class ProduceConsumerDemo {
             --i;
             System.out.println(Thread.currentThread().getName() + "减" + i);
             LOCK.notifyAll();
-
         }
     }
 
