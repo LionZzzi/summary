@@ -1,15 +1,15 @@
 package com.eric.thread.code.c2;
 
 /**
- * 懒汉 (线程不安全)
+ * 懒汉 (加锁, 线程安全)
  *
  * @author Eric
  * @date 2020/1/30 0:21
  */
-public class Singleton2 {
-    private static Singleton2 instance;
+public class Singleton3 {
+    private static Singleton3 instance;
 
-    private Singleton2() {
+    private Singleton3() {
         //do sth
         try {
             Thread.sleep(1000);
@@ -19,9 +19,9 @@ public class Singleton2 {
         System.out.println("dududu222");
     }
 
-    public static Singleton2 getInstance() {
+    public synchronized static Singleton3 getInstance() {
         if (null == instance) {
-            instance = new Singleton2();
+            instance = new Singleton3();
         }
         return instance;
     }
