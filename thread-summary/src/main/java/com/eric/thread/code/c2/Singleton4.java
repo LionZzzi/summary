@@ -1,7 +1,7 @@
 package com.eric.thread.code.c2;
 
 /**
- * 懒汉 (双重检验锁)
+ * 懒汉 (双重检验锁) 引发指令重排问题
  *
  * @author Eric
  * @date 2020/1/30 0:18
