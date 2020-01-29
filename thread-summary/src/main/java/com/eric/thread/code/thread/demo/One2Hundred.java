@@ -26,8 +26,8 @@ class ThreadAA extends Thread {
     public void run() {
         synchronized (lock) {
             for (int i = 1; i <= 100; i += 2) {
-                System.out.println(i);
                 lock.notify();
+                System.out.println(i);
                 try {
                     lock.wait();
                 } catch (InterruptedException e) {
