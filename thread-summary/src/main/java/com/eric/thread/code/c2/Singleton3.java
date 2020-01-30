@@ -7,16 +7,10 @@ package com.eric.thread.code.c2;
  * @date 2020/1/30 0:21
  */
 public class Singleton3 {
-    private static Singleton3 instance;
+    private static Singleton3 instance = null;
 
     private Singleton3() {
         //do sth
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println("dududu222");
     }
 
     public synchronized static Singleton3 getInstance() {

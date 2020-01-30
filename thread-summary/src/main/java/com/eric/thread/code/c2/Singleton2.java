@@ -7,7 +7,7 @@ package com.eric.thread.code.c2;
  * @date 2020/1/30 0:21
  */
 public class Singleton2 {
-    private static Singleton2 instance;
+    private static Singleton2 instance = null;
 
     private Singleton2() {
         //do sth
