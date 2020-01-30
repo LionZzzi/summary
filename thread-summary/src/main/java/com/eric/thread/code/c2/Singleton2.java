@@ -11,12 +11,6 @@ public class Singleton2 {
 
     private Singleton2() {
         //do sth
-        try {
-            Thread.sleep(1000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        System.out.println("dududu222");
     }
 
     public static Singleton2 getInstance() {
